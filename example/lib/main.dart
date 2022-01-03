@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPlatformState() async {
     try {
-      await EasyWifiConnect.connectWifi('ssl-4', 'O1713O4771\$');
+      await EasyWifiConnect.connectWifi('Your SSID', 'Your Password');
     } on PlatformException {
     }
   }
