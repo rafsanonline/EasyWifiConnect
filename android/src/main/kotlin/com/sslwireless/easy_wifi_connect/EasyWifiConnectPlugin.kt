@@ -45,6 +45,8 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
 
   private fun connectToWifi(ssid: String?, pass: String?) {
     if (Build.VERSION.SDK_INT >= 29) {
+
+
       val wifiNetworkSpecifier = WifiNetworkSpecifier.Builder()
         .setSsid(ssid.toString())
         .setWpa2Passphrase(pass.toString())
@@ -53,10 +55,16 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
       val networkRequest = NetworkRequest.Builder()
         .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
         .setNetworkSpecifier(wifiNetworkSpecifier)
+//        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         .build()
 
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-      connectivityManager.requestNetwork(networkRequest, ConnectivityManager.NetworkCallback())
+      connectivityManager.requestNetwork(networkRequest, object : ConnectivityManager.NetworkCallback(){
+        override fun onAvailable(network: Network) {
+          super.onAvailable(network)
+          connectivityManager.bindProcessToNetwork(network)
+        }
+      })
 
     } else {
       val wifiConfig = WifiConfiguration()
