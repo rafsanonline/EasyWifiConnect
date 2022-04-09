@@ -37,15 +37,14 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "wificonnect") {
-        connectToWifi(call.argument<String>("ssid"), call.argument<String>("pass"))
+        connectToWifi(result,call.argument<String>("ssid"), call.argument<String>("pass"))
     } else {
       result.notImplemented()
     }
   }
 
-  private fun connectToWifi(ssid: String?, pass: String?) {
+  private fun connectToWifi(result: Result,ssid: String?, pass: String?) {
     if (Build.VERSION.SDK_INT >= 29) {
-
 
       val wifiNetworkSpecifier = WifiNetworkSpecifier.Builder()
         .setSsid(ssid.toString())
@@ -63,7 +62,28 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
         override fun onAvailable(network: Network) {
           super.onAvailable(network)
           connectivityManager.bindProcessToNetwork(network)
+          result.success(true)
+//          Log.d("Charco", "onAvailable $network")
         }
+
+        override fun onLost(network: Network) {
+          super.onLost(network)
+//          Log.d("Charco", "onLost $network")
+          connectivityManager.bindProcessToNetwork(null)
+        }
+
+        override fun onUnavailable() {
+          super.onUnavailable()
+//          Log.d("Charco", "onUnavailable ")
+          result.success(false)
+        }
+
+        override fun onLosing(network: Network, maxMsToLive: Int) {
+          super.onLosing(network, maxMsToLive)
+          Log.d("Charco", "onLosing bindProcessToNetwork ")
+
+        }
+
       })
 
     } else {
