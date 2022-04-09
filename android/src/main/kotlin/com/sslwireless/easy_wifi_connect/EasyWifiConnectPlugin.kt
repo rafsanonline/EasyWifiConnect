@@ -60,10 +60,10 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
 
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
       connectivityManager.requestNetwork(networkRequest, object : ConnectivityManager.NetworkCallback(){
-        override fun onAvailable(network: Network) {
-          super.onAvailable(network)
-          connectivityManager.bindProcessToNetwork(network)
-        }
+//        override fun onAvailable(network: Network) {
+//          super.onAvailable(network)
+//          connectivityManager.bindProcessToNetwork(network)
+//        }
       })
 
     } else {
