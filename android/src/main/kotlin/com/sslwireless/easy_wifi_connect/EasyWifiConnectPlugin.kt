@@ -62,7 +62,12 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
         override fun onAvailable(network: Network) {
           super.onAvailable(network)
           connectivityManager.bindProcessToNetwork(network)
-          result.success(true)
+          try {
+            result.success(true)
+          }catch (e : Exception){
+            e.printStackTrace();
+          }
+
 //          Log.d("Charco", "onAvailable $network")
         }
 
@@ -75,7 +80,12 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
         override fun onUnavailable() {
           super.onUnavailable()
 //          Log.d("Charco", "onUnavailable ")
-          result.success(false)
+          try {
+            result.success(false)
+          }catch (e : Exception){
+            e.printStackTrace();
+          }
+
         }
 
         override fun onLosing(network: Network, maxMsToLive: Int) {
