@@ -37,7 +37,7 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "wificonnect") {
-        connectToWifi(result,call.argument<String>("ssid"), call.argument<String>("pass"))
+        connectToWifi(result,call.argument("ssid"), call.argument("pass"))
     } else {
       result.notImplemented()
     }
@@ -62,10 +62,10 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
         override fun onAvailable(network: Network) {
           super.onAvailable(network)
           connectivityManager.bindProcessToNetwork(network)
-          try {
+          try{
             result.success(true)
           }catch (e : Exception){
-            e.printStackTrace();
+
           }
 
 //          Log.d("Charco", "onAvailable $network")
@@ -80,10 +80,10 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
         override fun onUnavailable() {
           super.onUnavailable()
 //          Log.d("Charco", "onUnavailable ")
-          try {
+          try{
             result.success(false)
           }catch (e : Exception){
-            e.printStackTrace();
+
           }
 
         }
