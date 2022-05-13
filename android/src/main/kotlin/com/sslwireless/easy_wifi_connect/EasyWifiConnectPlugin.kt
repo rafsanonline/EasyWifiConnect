@@ -37,14 +37,15 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "wificonnect") {
-        connectToWifi(call.argument<String>("ssid"), call.argument<String>("pass"))
+        connectToWifi(result,call.argument("ssid"), call.argument("pass"))
     } else {
       result.notImplemented()
     }
   }
 
-  private fun connectToWifi(ssid: String?, pass: String?) {
+  private fun connectToWifi(result: Result,ssid: String?, pass: String?) {
     if (Build.VERSION.SDK_INT >= 29) {
+
       val wifiNetworkSpecifier = WifiNetworkSpecifier.Builder()
         .setSsid(ssid.toString())
         .setWpa2Passphrase(pass.toString())
@@ -53,10 +54,47 @@ class EasyWifiConnectPlugin: FlutterPlugin, MethodCallHandler {
       val networkRequest = NetworkRequest.Builder()
         .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
         .setNetworkSpecifier(wifiNetworkSpecifier)
+//        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         .build()
 
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-      connectivityManager.requestNetwork(networkRequest, ConnectivityManager.NetworkCallback())
+      connectivityManager.requestNetwork(networkRequest, object : ConnectivityManager.NetworkCallback(){
+        override fun onAvailable(network: Network) {
+          super.onAvailable(network)
+          connectivityManager.bindProcessToNetwork(network)
+          try{
+            result.success(true)
+          }catch (e : Exception){
+
+          }
+
+//          Log.d("Charco", "onAvailable $network")
+        }
+
+        override fun onLost(network: Network) {
+          super.onLost(network)
+//          Log.d("Charco", "onLost $network")
+          connectivityManager.bindProcessToNetwork(null)
+        }
+
+        override fun onUnavailable() {
+          super.onUnavailable()
+//          Log.d("Charco", "onUnavailable ")
+          try{
+            result.success(false)
+          }catch (e : Exception){
+
+          }
+
+        }
+
+        override fun onLosing(network: Network, maxMsToLive: Int) {
+          super.onLosing(network, maxMsToLive)
+          Log.d("Charco", "onLosing bindProcessToNetwork ")
+
+        }
+
+      })
 
     } else {
       val wifiConfig = WifiConfiguration()
